@@ -29,19 +29,22 @@ st.markdown("""
     z-index: 1000;
 }
 .logout-btn {
-    background-color: #dc3545;
+    background-color: transparent;
     color: white;
-    border: 5px solid black;
-    border-radius: 5px;
-    padding: 8px 20px;
+    border: 10px solid #000000;
+    border-radius: 8px;
+    background-color: #dc3545
+    color: white
+    padding: 10px 24px;
     font-weight: bold;
     cursor: pointer;
     font-size: 14px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     transition: all 0.3s ease;
 }
 .logout-btn:hover {
-    background-color: #bb2d3b;
+    background-color: #ff0000;
+     background-color: #bb2d3b;
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
@@ -51,7 +54,7 @@ st.markdown("""
 
 col1, col2, col3 = st.columns([8, 1, 1])
 with col3:
-    if st.button("Logout", key="logout_main"):
+    if st.button("Logout!", key="logout_main"):
         st.session_state.logged_in = False
         st.success("Logged out successfully!")
         st.switch_page("login.py")
@@ -125,6 +128,8 @@ with st.form("search_form"):
         f_status = st.selectbox("Status", ["All", "Active", "Inactive"])
 
     submit_button = st.form_submit_button("Search")
+if 'filtered_df' not in st.session_state:
+    st.session_state.filtered_df = None
 
 # --- Section 3: Logic & Results ---
 if submit_button:
@@ -150,26 +155,48 @@ if submit_button:
         if f_status != "All":
             df_db = df_db[df_db['Status'] == f_status]
 
-        act1, act2, act3 = st.columns([1, 2, 5])
-
-        with act1:
-            if not df_db.empty:
-                buffer = io.BytesIO()
-                with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
-                    df_db.to_excel(writer, index=False, sheet_name="Results")
-                buffer.seek(0)
-
-                st.download_button(
-                    "📥 Download Excel",
-                    data=buffer,
-                    file_name="results.xlsx",
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                )
-
-        with act2:
-            st.metric("Records Found", len(df_db))
-
-        st.dataframe(df_db, use_container_width=True, height=600)
+        st.session_state.filtered_df = df_db
 
     except Exception as e:
-        st.error(f"Error: {e}")
+        st.error(f"Error connecting to database: {e}")
+
+# 2. Display Logic (Placed outside the 'if submit_button' block so it stays visible)
+if st.session_state.filtered_df is not None:
+    df_res = st.session_state.filtered_df
+
+    # UI Row for Actions and Limit Selectbox
+    act1, act2, act3, act4 = st.columns([1.5, 1.5, 2, 4])
+
+    with act1:
+        if not df_res.empty:
+            buffer = io.BytesIO()
+            with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
+                df_res.to_excel(writer, index=False, sheet_name="Results")
+            buffer.seek(0)
+            st.download_button(
+                "📥 Download Excel",
+                data=buffer,
+                file_name="results.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+
+    with act2:
+        st.metric("Total Found", len(df_res))
+
+    with act3:
+        # This dropdown will now trigger a rerun, but data will persist via session_state
+        limit_options = ["100", "500", "1000", "All"]
+        display_limit = st.selectbox("Show rows:", options=limit_options, index=0)
+
+    # 3. Apply the display limit
+    if display_limit == "All":
+        df_display = df_res
+    else:
+        df_display = df_res.head(int(display_limit))
+
+    # 4. Final Table Display
+    st.dataframe(df_display, use_container_width=True, height=600)
+    
+    # Optional Warning if data is truncated
+    if display_limit != "All" and len(df_res) > int(display_limit):
+        st.info(f"💡 Showing top {display_limit} of {len(df_res)} records. Use 'All' or Download to see everything.")

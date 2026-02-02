@@ -62,6 +62,12 @@ with col1:
 
 with col2:
     Back_clicked = st.button("Back", use_container_width=True)
+
+@st.dialog("Account created Successfully")
+def show_success_dialog():
+    st.write("Your account has been created. You can now log in with your new account.")
+    if st.button("Go to Login"):
+        st.switch_page("login.py")
 if submit_clicked:
             if not email or not password:
                 st.warning("Please fill both fields.")
@@ -73,10 +79,7 @@ if submit_clicked:
                     st.error(error_msg)
                 else:
                     if save_new_user(email, password):
-                        st.success("Account created Successfully!")
-                        st.session_state.logged_in = True
-                        st.session_state.user_email = email
-
+                        show_success_dialog()
 if Back_clicked:
     try:
         st.switch_page("login.py")

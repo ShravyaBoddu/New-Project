@@ -3,6 +3,7 @@ import urllib.parse
 import re
 from sqlalchemy import create_engine, text
 import streamlit as st
+import time
 
 # --- DATABASE SETUP (Same as login.py) ---
 DB_USER = "project"
@@ -83,6 +84,12 @@ with col1:
 with col2:
     back_clicked = st.button("Back", use_container_width=True)
 
+@st.dialog("Password Reset Successful")
+def show_success_dialog():
+    st.write("Your password has been updated. You can now log in with your new credentials.")
+    if st.button("Go to Login"):
+        st.switch_page("login.py")
+
 # --- RESET LOGIC ---
 if reset_clicked:
     if not email or not new_password or not confirm_password:
@@ -94,9 +101,8 @@ if reset_clicked:
     else:
         success, message = reset_password(email, new_password)
         if success:
-            st.success(message)
-            st.session_state.reset_success = True
-            st.success("Password Reset Complete")
+            show_success_dialog()
+
            
         else:
             st.error(message)
