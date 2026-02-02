@@ -51,7 +51,7 @@ if 'logged_in' not in st.session_state:
 
 # --- UI LOGIC ---
 if not st.session_state.logged_in:
-    st.set_page_config(page_title="Login", page_icon="🔐")
+    st.set_page_config(page_title="Login", page_icon="🔐",layout="centered")
     
     col1, col2, col3 = st.columns([1, 8, 1])
     

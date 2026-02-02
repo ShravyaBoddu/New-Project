@@ -19,6 +19,9 @@ engine = create_engine(
 
 st.set_page_config(page_title="HeidiSQL Data Manager", layout="wide")
 
+
+
+
 #  Logout Button 
 st.markdown("""
 <style>
@@ -57,6 +60,7 @@ with col3:
     if st.button("Logout!", key="logout_main"):
         st.session_state.logged_in = False
         st.success("Logged out successfully!")
+        st.session_state.clear()
         st.switch_page("login.py")
 
 # --- Page Title ---
@@ -88,7 +92,7 @@ with st.expander("⬆️ Upload New Data"):
                 df_upload.to_sql(
                     TABLE_NAME,
                     con=engine,
-                    if_exists="replace",
+                    if_exists="append",
                     index=False
                 )
                 st.session_state.upload_done = True
