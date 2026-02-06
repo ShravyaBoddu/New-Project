@@ -72,6 +72,7 @@ if not st.session_state.logged_in:
 
         # Logic for Log In
         if login_clicked:
+            
             if authenticate(email, password):
                 st.session_state.logged_in = True
                 st.session_state.user_email = email
