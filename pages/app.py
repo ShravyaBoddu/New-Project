@@ -106,13 +106,14 @@ if submit_button or st.session_state.get('filtered_df') is not None:
       with engine.connect() as conn:
         
         if is_superadmin:
-            query = f"SELECT * FROM {TABLE_NAME}"
-            df_db = pd.read_sql(query, con=engine)
+                # Query for Superadmin (All data)
+                query = text(f"SELECT * FROM {TABLE_NAME}")
+                params = {}
         else:
-            
-          query = text(f"SELECT * FROM {TABLE_NAME} WHERE uploaded_by = :user")
-        df_db = pd.read_sql(query, con=conn, params={"user": current_user})
-
+                # Query for Regular User (Filtered by owner)
+                query = text(f"SELECT * FROM {TABLE_NAME} WHERE uploaded_by = :user")
+                params = {"user": current_user}
+        df_db = pd.read_sql(query, con=conn, params=params)
         
         if f_name: df_db = df_db[df_db['Name'].astype(str).str.contains(f_name, case=False, na=False)]
         if f_mobile: df_db = df_db[df_db['Mobile'].astype(str).str.contains(f_mobile, case=False, na=False)]
