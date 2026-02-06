@@ -3,7 +3,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 import urllib.parse
 import io
-
+from sqlalchemy import text
 
 DB_USER = "project"
 DB_PASSWORD = "project123"
@@ -103,14 +103,15 @@ with st.form("search_form"):
 
 if submit_button or st.session_state.get('filtered_df') is not None:
     try:
+      with engine.connect() as conn:
         
         if is_superadmin:
             query = f"SELECT * FROM {TABLE_NAME}"
             df_db = pd.read_sql(query, con=engine)
         else:
             
-           query = f"SELECT * FROM {TABLE_NAME} WHERE uploaded_by = '{current_user}'"
-           df_db = pd.read_sql(query, con=engine)
+          query = text(f"SELECT * FROM {TABLE_NAME} WHERE uploaded_by = :user")
+        df_db = pd.read_sql(query, con=conn, params={"user": current_user})
 
         
         if f_name: df_db = df_db[df_db['Name'].astype(str).str.contains(f_name, case=False, na=False)]
