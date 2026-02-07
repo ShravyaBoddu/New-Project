@@ -25,12 +25,23 @@ st.set_page_config(page_title="HeidiSQL Data Manager", layout="wide")
 
 # --- Security Check ---
 # Assuming 'user_email' is stored in session_state during login.py
-#if 'logged_in' not in st.session_state or not st.session_state.logged_in:
-    #st.warning("Please log in first.")
-    #st.stop()
+if 'logged_in' not in st.session_state:
+    st.session_state.logged_in = False
+
+if "user_email" not in st.session_state:
+    if "user" in st.query_params:
+        st.session_state.user_email = st.query_params["user"]
+    else:
+        st.switch_page("login.py")
+
+# Ensure URL always has the user email for refresh-persistence
+st.query_params["user"] = st.session_state.user_email
+    
 
 current_user = st.session_state.get('user_email', 'unknown')
 is_superadmin = (current_user == SUPERADMIN_EMAIL)
+if st.session_state.get("admin_view") == "editor":
+    st.switch_page("pages/edit.py")
 
 # --- Logout Styling & Logic ---
 st.markdown("""
@@ -39,12 +50,23 @@ st.markdown("""
 .logout-btn { background-color: #dc3545; color: white; border-radius: 8px; padding: 10px 24px; font-weight: bold; cursor: pointer; border: none; }
 </style>
 """, unsafe_allow_html=True)
+st.markdown("""
+<style>
+.user_info-container { position: fixed; top: 20px; right: 20px; z-index: 1000; }
+.user_info-btn { background-color: #dc3545; color: white; border-radius: 10px; padding: 10px 24px; font-weight: bold; cursor: pointer; border: 10px solid black; }
+</style>
+""", unsafe_allow_html=True)
 
 col1, col2, col3 = st.columns([8, 1, 1])
 with col3:
     if st.button("Logout!", key="logout_main"):
         st.session_state.clear()
         st.switch_page("login.py")
+
+with col2:
+    if is_superadmin:
+     if st.button("User Information"):
+        st.switch_page("pages/user.py")
 
 st.title("📊 Data Portal")
 if is_superadmin:
@@ -64,6 +86,7 @@ with st.expander("⬆️ Upload New Data"):
             
             # ATTACH OWNERSHIP: This ensures only this user can see this data later
             df_upload['uploaded_by'] = current_user
+            df_upload['filename'] = uploaded_file.name
 
             if st.button("Upload Data"):
                 df_upload.to_sql(TABLE_NAME, con=engine, if_exists="append", index=False)

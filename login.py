@@ -14,6 +14,8 @@ USER_TABLE = "login"
 password_encoded = urllib.parse.quote_plus(DB_PASSWORD)
 engine = create_engine(f"mysql+pymysql://{DB_USER}:{password_encoded}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
 
+
+
 # --- VALIDATION FUNCTIONS ---
 def is_valid_email(email):
     # Standard email regex pattern
