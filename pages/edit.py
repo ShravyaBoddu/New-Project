@@ -12,7 +12,7 @@ engine = create_engine(f"mysql+pymysql://{DB_USER}:{password_encoded}@{DB_HOST}:
 if "target_user" not in st.session_state or "target_file" not in st.session_state:
     st.warning("No file selected for editing. Please return to the registry.")
     if st.button("Return to Registry"):
-        st.switch_page("pages/user.py")
+        st.switch_page("pages/login.py")
     st.stop()
 
 user = st.session_state.target_user

@@ -89,7 +89,7 @@ with col_btns:
 
         with b1:
             if st.button("File History"):
-                st.switch_page("pages/user.py")
+                st.switch_page("pages/file_hist.py")
 
         with b2:
             if st.button("User Info"):
