@@ -5,6 +5,7 @@ import urllib.parse
 import io
 from sqlalchemy import text
 
+
 DB_USER = "project"
 DB_PASSWORD = "project123"
 DB_HOST = "192.168.5.8"
@@ -46,27 +47,81 @@ if st.session_state.get("admin_view") == "editor":
 # --- Logout Styling & Logic ---
 st.markdown("""
 <style>
+    /* Target the Logout button specifically by its key */
+    div[data-testid="stButton"] button:has(div:contains("Logout")) {
+        background-color: #dc3545;
+        color: white;
+    }
+</style>
+""", unsafe_allow_html=True)
+#file history button
+st.markdown("""
+<style>
+.file_info-container { position: fixed; top: 20px; right: 20px; z-index: 1000; }
+.file_info-btn { background-color: #dc3545; color: white; border-radius: 10px; padding: 10px 24px; font-weight: bold; cursor: pointer; border: 10px solid black; }
+</style>
+""", unsafe_allow_html=True)
+#user information button
+st.markdown("""
+<style>
 .logout-container { position: fixed; top: 20px; right: 20px; z-index: 1000; }
 .logout-btn { background-color: #dc3545; color: white; border-radius: 8px; padding: 10px 24px; font-weight: bold; cursor: pointer; border: none; }
 </style>
 """, unsafe_allow_html=True)
-st.markdown("""
-<style>
-.user_info-container { position: fixed; top: 20px; right: 20px; z-index: 1000; }
-.user_info-btn { background-color: #dc3545; color: white; border-radius: 10px; padding: 10px 24px; font-weight: bold; cursor: pointer; border: 10px solid black; }
-</style>
-""", unsafe_allow_html=True)
 
-col1, col2, col3 = st.columns([8, 1, 1])
-with col3:
-    if st.button("Logout!", key="logout_main"):
-        st.session_state.clear()
-        st.switch_page("login.py")
 
-with col2:
+
+
+
+
+
+
+# --- Navigation/Header Row ---
+# We create a column layout where the left is empty space (8 parts) 
+# and the right (4 parts) holds our buttons.
+# push content to the right
+_, col_btns = st.columns([8, 4])
+
+with col_btns:
+
     if is_superadmin:
-     if st.button("User Information"):
-        st.switch_page("pages/user.py")
+        b1, b2, b3 = st.columns(3)
+
+        with b1:
+            if st.button("File History"):
+                st.switch_page("pages/user.py")
+
+        with b2:
+            if st.button("User Info"):
+                st.switch_page("pages/user_info.py")
+
+        with b3:
+            if st.button("Logout", key="logout_main"):
+                st.session_state.clear()
+                st.switch_page("login.py")
+
+    else:
+        b1, b2 = st.columns(2)
+
+        with b1:
+            if st.button("Account History"):
+                st.switch_page("pages/acc.py")
+
+        with b2:
+            if st.button("Logout", key="logout_main"):
+                st.session_state.clear()
+                st.switch_page("login.py")
+
+
+st.divider()
+
+
+        
+
+
+
+
+
 
 st.title("📊 Data Portal")
 if is_superadmin:
