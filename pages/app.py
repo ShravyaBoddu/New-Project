@@ -6,6 +6,8 @@ import io
 from sqlalchemy import text
 
 
+
+
 DB_USER = "project"
 DB_PASSWORD = "project123"
 DB_HOST = "192.168.5.8"
@@ -13,8 +15,10 @@ DB_PORT = "3306"
 DB_NAME = "Newproj"
 TABLE_NAME = "data"
 
-SUPERADMIN_EMAIL = "admin@example.com"
-SUPERADMIN_PASS = "Admin@123" 
+
+
+# SUPERADMIN_EMAIL = "admin@example.com"
+# SUPERADMIN_PASS = "Admin@123" 
 
 # --- Database Setup ---
 password_encoded = urllib.parse.quote_plus(DB_PASSWORD)
@@ -23,6 +27,12 @@ engine = create_engine(
 )
 
 st.set_page_config(page_title="HeidiSQL Data Manager", layout="wide")
+def get_user_role(email):
+    with engine.connect() as conn:
+        q = text("SELECT role FROM login WHERE email = :email")
+        row = conn.execute(q, {"email": email} ).fetchone()
+        return row[0] if row else "user"
+
 
 # --- Security Check ---
 # Assuming 'user_email' is stored in session_state during login.py
@@ -40,7 +50,11 @@ st.query_params["user"] = st.session_state.user_email
     
 
 current_user = st.session_state.get('user_email', 'unknown')
-is_superadmin = (current_user == SUPERADMIN_EMAIL)
+
+user_role = get_user_role(current_user)
+is_superadmin = (user_role == "admin")
+
+# is_superadmin = (current_user == SUPERADMIN_EMAIL)
 if st.session_state.get("admin_view") == "editor":
     st.switch_page("pages/edit.py")
 

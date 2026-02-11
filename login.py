@@ -47,7 +47,7 @@ if not st.session_state.logged_in:
     with col2:
         st.title("🔐 User Login")
         # ✅ Fixed: Renamed variable from 'text' to 'user_id'
-        user_id = st.text_input("Name or Email", key="login_user")
+        user_id = st.text_input("Email", key="login_user")
         user_pass = st.text_input("Password", type="password", key="login_pass")
         
         btn_col1, btn_col2, _ = st.columns([1, 1, 2])
@@ -67,6 +67,7 @@ if not st.session_state.logged_in:
             elif authenticate(user_id, user_pass):
                 st.session_state.logged_in = True
                 st.session_state.user_email = user_id
+                
                 st.success("Login Successful!")
                 st.switch_page("pages/app.py")
             else:

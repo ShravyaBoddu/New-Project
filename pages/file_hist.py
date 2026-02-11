@@ -3,19 +3,16 @@ import pandas as pd
 from sqlalchemy import create_engine, text
 import urllib.parse
 
-
-
-
 # --- 1. Database Setup ---
 @st.cache_resource
 def init_db():
+    # Credentials
     DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME = "project", "project123", "192.168.5.8", "3306", "Newproj"
     password_encoded = urllib.parse.quote_plus(DB_PASSWORD)
+    # Using pymysql as the driver
     return create_engine(f"mysql+pymysql://{DB_USER}:{password_encoded}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
 
-
 engine = init_db()
-
 
 # --- 2. Permission Helper ---
 def get_all_permissions():
@@ -23,18 +20,17 @@ def get_all_permissions():
     try:
         with engine.connect() as conn:
             res = conn.execute(text("SELECT perm_id, permission_status FROM file_permissions"))
-            return {row[0]: row[1] for row in res.fetchall()}
-    except Exception:
+            # Normalizing keys to lowercase and stripped to avoid matching errors
+            return {str(row[0]).strip(): str(row[1]).strip().upper() for row in res.fetchall()}
+    except Exception as e:
+        st.sidebar.error(f"Permission Sync Error: {e}")
         return {}
-
 
 # Initialize session state with database values
 if "permissions_map" not in st.session_state:
     st.session_state.permissions_map = get_all_permissions()
 
-
 st.set_page_config(page_title="File Upload History", layout="wide")
-
 
 # --- 3. Navigation ---
 nav_col, home_col, logout_col = st.columns([5, 1, 1])
@@ -46,9 +42,7 @@ with logout_col:
         st.session_state.clear()
         st.switch_page("login.py")
 
-
 st.title("📁 File Upload History")
-
 
 # --- 4. Data Loading ---
 @st.cache_data(ttl=300)
@@ -61,77 +55,62 @@ def load_file_history():
         st.error(f"Error loading data: {str(e)}")
         return pd.DataFrame()
 
-
 df = load_file_history()
-
-
-# Corrected Form Implementation
-
-
 
 # --- 5. Display Logic ---
 if df.empty:
     st.warning("No data found in the database.")
 else:
-    # Email | Filename | Rows | Edit Button | Delete Button
-    col1, col2, col3, col4, col5 = st.columns([3, 3, 1, 1, 1])
-    col1.markdown("**User Email**")
-    col2.markdown("**Filename**")
-    col3.markdown("**Rows**")
-    col4.markdown("**Edit**")
-    col5.markdown("**Delete**")
-
+    # Header
+    h1, h2, h3, h4, h5 = st.columns([3, 3, 1, 1, 1])
+    h1.markdown("**User Email**")
+    h2.markdown("**Filename**")
+    h3.markdown("**Rows**")
+    h4.markdown("**Edit**")
+    h5.markdown("**Delete**")
     st.divider()
 
     # Data rows
     for idx, row in df.iterrows():
-        target_file= row['filename']
-        target_user= row['uploaded_by']
-        perm_id = f"{str(target_user).strip()}_{str(target_file).strip()}"
+        target_file = str(row['filename']).strip()
+        target_user = str(row['uploaded_by']).strip()
         
-
+        # Construct perm_id exactly as it exists in your file_permissions table
+        perm_id = f"{target_user}_{target_file}"
+        
+        # Get status from session state (defaults to "NO")
         current_status = st.session_state.permissions_map.get(perm_id, "NO")
 
         with st.container():
             c1, c2, c3, c4, c5 = st.columns([3, 3, 1, 1, 1])
 
             c1.write(target_user)
-            c2.write(target_file or "Unknown")
+            c2.write(target_file if target_file else "Unknown")
             c3.write(f"{int(row['records']):,}")
 
-         # --- Edit Button Logic ---
+            # --- Edit Button Logic ---
             with c4:
-             if st.button("✏️ Edit", key=f"edit_{idx}"):
-
-                if str(current_status).strip().upper() == "YES":
-
-                   st.session_state["target_file"] = str(target_file).strip()
-                   st.session_state["target_user"] = str(target_user).strip()
-
-                   st.switch_page("pages/file_edit.py")
-
-             else:
-                  st.warning("Editing is not allowed for this file.")
+                if st.button("Edit", key=f"edit_{idx}"):
+                    if current_status == "YES":
+                        st.session_state["target_file"] = target_file
+                        st.session_state["target_user"] = target_user
+                        st.switch_page("pages/file_edit.py")
+                    else:
+                        st.error(f"Access Denied (Status: {current_status})")
 
             # --- Delete Button Logic ---
             with c5:
                 if st.button("Delete", key=f"del_{idx}"):
                     try:
                         with engine.begin() as conn:
-                            # Delete all records with this file and user
+                            # Delete records
                             delete_data = text("DELETE FROM data WHERE uploaded_by = :u AND filename = :f")
                             conn.execute(delete_data, {"u": target_user, "f": target_file})
-
-                            # Optionally, clean permission if you want
-                            # delete_perm = text("DELETE FROM file_permissions WHERE perm_id = :pid")
-                            # conn.execute(delete_perm, {"pid": perm_id})
-
-                        st.success(f"File '{target_file}' deleted from database.")
+                        
+                        st.success(f"Deleted {target_file}")
                         st.cache_data.clear()
                         st.rerun()
-                        # Clear cached history so list updates
-                       
                     except Exception as e:
-                        st.error(f"Failed to delete file: {e}")
+                        st.error(f"Delete failed: {e}")
 
     st.divider()

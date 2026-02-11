@@ -57,7 +57,7 @@ if df_to_edit.empty:
     st.warning("No records found for this file.")
     st.stop()
 
-st.info("Edit the cells and click **Save Changes**")
+
 
 # (Optional but recommended)
 # prevent editing file owner and filename

@@ -101,9 +101,11 @@ else:
 
             # DELETE LOGIC (using a Popover for safe confirmation)
             with c5:
-                with st.popover("🗑️ Delete"):
-                    st.write("Are you sure?")
-                    if st.button("Confirm", key=f"confirm_del_{idx}"):
+                if st.button("Delete", key=f"confirm_del_{idx}"):
+
+                    
                         delete_file_record(current_user_email, fname)
+                        st.success("Deleted")
+                        st.rerun()
 
 st.divider()
