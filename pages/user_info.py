@@ -6,7 +6,8 @@ import urllib.parse
 # Configure page config FIRST
 st.set_page_config(page_title="User Information", layout="wide")
 
-# --- Database Setup ---
+# --- 1. Database Setup ---
+@st.cache_resource
 def init_db():
     DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME = "project", "project123", "192.168.5.8", "3306", "Newproj"
     password_encoded = urllib.parse.quote_plus(DB_PASSWORD)
@@ -14,85 +15,119 @@ def init_db():
 
 engine = init_db()
 
-# --- Navigation Header ---
-header_container = st.container()
-with header_container:
-    col1, col2, col3 = st.columns([5, 1, 1])
-    with col2:
-        if st.button("⬅️ Back", key="back_btn", use_container_width=True):
-            st.switch_page("pages/app.py")
-    with col3:
-        if st.button("Logout", key="logout_btn", use_container_width=True):
-            st.session_state.clear()
-            st.switch_page("login.py")
+def update_db_permission(email, status):
+    try:
+        with engine.begin() as conn:
+            query = sql_text("""
+                INSERT INTO file_permissions (perm_id, permission_status) 
+                VALUES (:id, :status) 
+                ON DUPLICATE KEY UPDATE permission_status = :status
+            """)
+            conn.execute(query, {"id": email, "status": status})
+    except Exception as e:
+        st.error(f"Error updating database: {e}")
 
-st.title("👥 User Information")
+def get_all_permissions():
+    try:
+        with engine.connect() as conn:
+            res = conn.execute(sql_text("SELECT perm_id, permission_status FROM file_permissions"))
+            return {row[0]: row[1] for row in res.fetchall()}
+    except Exception:
+        return {}
 
-# --- Data Fetching Logic ---
+if "permissions_map" not in st.session_state:
+    st.session_state.permissions_map = get_all_permissions()
+
+# --- 2. Navigation Header ---
+col_nav,col_back, col_logout = st.columns([5,1,1])
+with col_back:
+    if st.button("⬅️ Back"):
+        st.switch_page("pages/app.py")
+with col_logout:
+    if st.button("Logout"):
+        st.session_state.clear()
+        st.switch_page("login.py")
+
+st.title("👥 User Administration")
+
+# --- 3. Data Fetching ---
 def fetch_all_users():
     try:
         with engine.connect() as conn:
-            # We use a LEFT JOIN so we see users even if they haven't uploaded files yet
-            query = sql_text("""
-                SELECT 
-                    l.name AS Name, 
-                    l.email AS Email, 
-                    l.password AS Password, 
-                    GROUP_CONCAT(DISTINCT d.filename SEPARATOR ', ') as Files
-                FROM login AS l
-                LEFT JOIN data AS d ON l.email = d.uploaded_by
-                GROUP BY l.email, l.name, l.password
-                ORDER BY l.name ASC
-            """)
+            query = sql_text("SELECT name, email ,password FROM login ORDER BY name ASC")
             return pd.read_sql(query, con=conn)
     except Exception as e:
         st.error(f"❌ Error loading data: {e}")
         return pd.DataFrame()
 
-# Load initial data
 df = fetch_all_users()
 
-# --- Search Section ---
-st.subheader("Search & Filter")
+# --- 4. Search & Filter Section ---
+st.subheader("🔍 Search & Filter")
+
+# Corrected Form Implementation
 with st.form("search_form"):
     c1, c2 = st.columns(2)
-    with c1: 
-        f_name = st.text_input("Filter by Name")
-    with c2: 
-        f_email = st.text_input("Filter by Email")
-    
+    f_name = c1.text_input("Filter by Name")
+    f_email = c2.text_input("Filter by Email")
     submit_button = st.form_submit_button("Search")
 
-# --- Filtering Logic ---
+# Apply filtering based on form inputs
 display_df = df.copy()
+if f_name:
+    display_df = display_df[display_df['name'].str.contains(f_name, case=False, na=False)]
+if f_email:
+    display_df = display_df[display_df['email'].str.contains(f_email, case=False, na=False)]
 
-if submit_button:
-    if f_name:
-        display_df = display_df[display_df['Name'].str.contains(f_name, case=False, na=False)]
-    if f_email:
-        display_df = display_df[display_df['Email'].str.contains(f_email, case=False, na=False)]
+metric_col, add_user_col = st.columns([3, 1])
+metric_col.metric("Total Unique Users", len(display_df))
+with add_user_col:
+    if st.button("Add New User", use_container_width=True):
+        st.switch_page("pages/signup.py")
 
-# --- UI Display ---
 st.divider()
 
+# --- 5. UI Table Display ---
 if display_df.empty:
-    st.warning("⚠️ No user records match your criteria.")
+    st.warning("⚠️ No user records found.")
 else:
-    # Display Metrics
-    total_unique = display_df['Email'].nunique()
-    st.metric(label="Users Found", value=total_unique)
+    # Header Row
+    h1, h2, h3, h4 = st.columns([2, 3, 1.5, 2.5])
+    h1.markdown("**Name**")
+    h2.markdown("**Email**")
+    h3.markdown("**Password**")
+    h4.markdown("**Permission Status**")
+    st.divider()
 
-    # Enhanced dataframe display
-    st.dataframe(
-        display_df, 
-        use_container_width=True,
-        hide_index=True,
-        column_config={
-            "Name": st.column_config.TextColumn("👤 Name", width="medium"),
-            "Email": st.column_config.TextColumn("📧 Email", width="medium"),
-            "Password": st.column_config.TextColumn("🔒 Password", width="small"),
-            "Files": st.column_config.TextColumn("📁 Uploaded Files", width="large")
-        }
-    )
-
-st.markdown("---")
+    for idx, row in display_df.iterrows():
+        u_name = row['name']
+        u_email = row['email']
+        u_password = row['password']
+        current_status = st.session_state.permissions_map.get(u_email, "NO")
+        
+        with st.container():
+            c1, c2, c3, c4 = st.columns([2, 3, 1.5, 2.5])
+            
+            c1.text(u_name)
+            c2.text(u_email)
+            c3.text(u_password)
+            
+            # 5a. EDIT BUTTON
+           
+            
+            # 5b. PERMISSION RADIO
+            with c4:
+                radio_idx = 0 if current_status == "YES" else 1
+                choice = st.radio(
+                    f"Label_{u_email}",
+                    ["YES", "NO"],
+                    index=radio_idx,
+                    key=f"radio_{u_email}",
+                    label_visibility="collapsed",
+                    horizontal=True
+                )
+                
+                if choice != current_status:
+                    update_db_permission(u_email, choice)
+                    st.session_state.permissions_map[u_email] = choice
+                    st.rerun()

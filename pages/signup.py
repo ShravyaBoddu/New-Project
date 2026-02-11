@@ -30,14 +30,15 @@ def is_valid_password(password):
         return False, "Password must contain at least one special character."
     return True, ""
 
-def save_new_user(email, name, password):
+def save_new_user(name, email, password):
     try:
         with engine.connect() as conn:
             # ✅ Fixed: Using named parameters correctly
-            query = text(f"INSERT INTO {USER_TABLE} (email, name, password) VALUES (:email, :name, :password)")
+            query = text(f"INSERT INTO {USER_TABLE} (name, email, password) VALUES (:name,:email, :password)")
             conn.execute(query, {
-                "email": email,
+                
                 "name": name,
+                "email": email,
                 "password": password
             })
             conn.commit()
@@ -53,8 +54,8 @@ st.title("Create New User")
 st.markdown("---")
 
 # Three Textboxes
-email = st.text_input("Enter Email", placeholder="example@email.com")
 name = st.text_input("Enter Name", placeholder="John Doe")
+email = st.text_input("Enter Email", placeholder="example@email.com")
 password = st.text_input("Enter Password", type="password")
 
 col1, col2 = st.columns([1, 1])
@@ -68,12 +69,12 @@ with col2:
 @st.dialog("Account Created Successfully")
 def show_success_dialog():
     st.write("Your account has been created. You can now log in with your new account.")
-    if st.button("Go to Login"):
-        st.switch_page("login.py")
+    if st.button("OK"):
+        st.switch_page("pages/user_info.py")
 
 # --- LOGIC ---
 if submit_clicked:
-    if not email or not name or not password:
+    if not name or not email or not password:
         st.warning("Please fill in all three fields.")
     elif not is_valid_email(email):
         st.error("Please enter a valid email address.")
@@ -83,11 +84,11 @@ if submit_clicked:
             st.error(error_msg)
         else:
             # ✅ Fixed: Passing the actual variables here
-            if save_new_user(email, name, password):
+            if save_new_user(name, email, password):
                 show_success_dialog()
 
 if back_clicked:
     try:
-        st.switch_page("login.py")
+        st.switch_page("pages/user_info.py")
     except Exception:
-        st.error("login.py not found in the directory.")
+        st.error("not found in the directory.")

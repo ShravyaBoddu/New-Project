@@ -54,10 +54,10 @@ if not st.session_state.logged_in:
         
         with btn_col1:
             login_clicked = st.button("Log In", use_container_width=True)
+        #with btn_col2:
+            #signup_clicked = st.button("SignUp", use_container_width=True)
         with btn_col2:
-            signup_clicked = st.button("SignUp", use_container_width=True)
-        
-        if st.button("Forgot Password?"):
+         if st.button("Forgot Password?",use_container_width=True):
             st.switch_page("pages/reset.py")
 
         # Logic for Log In
@@ -73,5 +73,5 @@ if not st.session_state.logged_in:
                 st.error("Invalid credentials.")
         
         # Logic for Sign Up
-        if signup_clicked:
-            st.switch_page("pages/signup.py")
+        #if signup_clicked:
+            #st.switch_page("pages/signup.py")
