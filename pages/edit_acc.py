@@ -23,7 +23,7 @@ if not target_user or not target_file:
     st.error(" No file selection detected in session memory.")
     
     if st.button("Return to File History"):
-        st.switch_page("pages/file_hist.py")
+        st.switch_page("pages/acc.py")
     st.stop()
 
 # --- 3. Navigation ---
