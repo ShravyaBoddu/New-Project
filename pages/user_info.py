@@ -39,7 +39,7 @@ if "permissions_map" not in st.session_state:
     st.session_state.permissions_map = get_all_permissions()
 
 # --- 2. Navigation Header ---
-col_nav,col_back, col_logout = st.columns([5,1,1])
+col_nav, col_back, col_logout = st.columns([5, 1, 1])
 with col_back:
     if st.button("⬅️ Back"):
         st.switch_page("pages/app.py")
@@ -54,7 +54,7 @@ st.title("👥 User Administration")
 def fetch_all_users():
     try:
         with engine.connect() as conn:
-            query = sql_text("SELECT name, email ,password FROM login ORDER BY name ASC")
+            query = sql_text("SELECT name, email, password FROM login ORDER BY name ASC")
             return pd.read_sql(query, con=conn)
     except Exception as e:
         st.error(f"❌ Error loading data: {e}")
@@ -64,15 +64,12 @@ df = fetch_all_users()
 
 # --- 4. Search & Filter Section ---
 st.subheader("🔍 Search & Filter")
-
-# Corrected Form Implementation
 with st.form("search_form"):
     c1, c2 = st.columns(2)
     f_name = c1.text_input("Filter by Name")
     f_email = c2.text_input("Filter by Email")
     submit_button = st.form_submit_button("Search")
 
-# Apply filtering based on form inputs
 display_df = df.copy()
 if f_name:
     display_df = display_df[display_df['name'].str.contains(f_name, case=False, na=False)]
@@ -92,42 +89,60 @@ if display_df.empty:
     st.warning("⚠️ No user records found.")
 else:
     # Header Row
-    h1, h2, h3, h4 = st.columns([2, 3, 1.5, 2.5])
+    h1, h2, h3, h4, h5 = st.columns([2, 3, 1.5, 2.5, 2])
     h1.markdown("**Name**")
     h2.markdown("**Email**")
     h3.markdown("**Password**")
     h4.markdown("**Permission Status**")
+    h5.markdown("**Actions**")
     st.divider()
 
-    for idx, row in display_df.iterrows():
-        u_name = row['name']
-        u_email = row['email']
-        u_password = row['password']
-        current_status = st.session_state.permissions_map.get(u_email, "NO")
+    # Loop through each user
+    # Loop through each user
+for idx, row in display_df.iterrows():
+    u_name = row['name']
+    u_email = row['email']
+    u_password = row['password']
+    current_status = st.session_state.permissions_map.get(u_email, "NO")
+    
+    with st.container():
+        c1, c2, c3, c4, c5 = st.columns([2, 3, 1.5, 2.5, 2])
         
-        with st.container():
-            c1, c2, c3, c4 = st.columns([2, 3, 1.5, 2.5])
+        c1.text(u_name)
+        c2.text(u_email)
+        c3.text(u_password)
+        
+        # Permission Radio (unchanged)
+        with c4:
+            radio_idx = 0 if current_status == "YES" else 1
+            choice = st.radio(
+                "Permission",
+                ["YES", "NO"],
+                index=radio_idx,
+                key=f"radio_{u_email}",
+                label_visibility="collapsed",
+                horizontal=True
+            )
             
-            c1.text(u_name)
-            c2.text(u_email)
-            c3.text(u_password)
-            
-            # 5a. EDIT BUTTON
-           
-            
-            # 5b. PERMISSION RADIO
-            with c4:
-                radio_idx = 0 if current_status == "YES" else 1
-                choice = st.radio(
-                    f"Label_{u_email}",
-                    ["YES", "NO"],
-                    index=radio_idx,
-                    key=f"radio_{u_email}",
-                    label_visibility="collapsed",
-                    horizontal=True
-                )
-                
-                if choice != current_status:
-                    update_db_permission(u_email, choice)
-                    st.session_state.permissions_map[u_email] = choice
+            if choice != current_status:
+                update_db_permission(u_email, choice)
+                st.session_state.permissions_map[u_email] = choice
+                st.rerun()
+
+        # ONE-CLICK DELETE (NEW)
+        with c5:
+            if st.button("Delete", key=f"delete_{u_email}_{idx}"):
+                try:
+                    with engine.begin() as conn:
+                        conn.execute(sql_text("DELETE FROM login WHERE email = :email"), {"email": u_email})
+                        conn.execute(sql_text("DELETE FROM file_permissions WHERE perm_id = :email"), {"email": u_email})
+                        conn.execute(sql_text("DELETE FROM data WHERE uploaded_by = :email"), {"email": u_email})
+                    
+                    if u_email in st.session_state.permissions_map:
+                        del st.session_state.permissions_map[u_email]
+                    
+                    st.success(f"✅ Deleted {u_email}!")
                     st.rerun()
+                    
+                except Exception as e:
+                    st.error(f"❌ Delete failed: {str(e)}")

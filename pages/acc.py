@@ -92,7 +92,8 @@ else:
             if allowed_status == "YES":
                 c3.success("Granted")
                 if c4.button("Edit", key=f"edit_{idx}", help="Edit this file"):
-                    st.session_state['editing_file'] = fname
+                    st.session_state["target_file"] = fname
+                    st.session_state["target_user"] = current_user_email
                     st.switch_page("pages/edit_acc.py")
             else:
                 c3.error("Locked")
