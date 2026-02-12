@@ -19,7 +19,7 @@ st.set_page_config(page_title="Edit File Records", layout="wide")
 col1, col2, col3 = st.columns([5, 1, 1])
 
 with col2:
-    if st.button("Back"):
+    if st.button("⬅️Back"):
         st.switch_page("pages/acc.py")
 
 with col3:
