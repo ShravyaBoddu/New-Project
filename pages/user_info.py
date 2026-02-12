@@ -15,6 +15,12 @@ def init_db():
 
 engine = init_db()
 
+def is_superadmin(email):
+    with engine.connect() as conn:
+        q =sql_text ("SELECT role FROM login WHERE email = :email AND role = 'admin'")
+        row = conn.execute(q, {"email": email} ).fetchone()
+        return row is not None
+
 def update_db_permission(email, status):
     try:
         with engine.begin() as conn:
@@ -113,21 +119,37 @@ for idx, row in display_df.iterrows():
         c3.text(u_password)
         
         # Permission Radio (unchanged)
-        with c4:
-            radio_idx = 0 if current_status == "YES" else 1
-            choice = st.radio(
-                "Permission",
-                ["YES", "NO"],
-                index=radio_idx,
-                key=f"radio_{u_email}",
-                label_visibility="collapsed",
-                horizontal=True
-            )
-            
-            if choice != current_status:
-                update_db_permission(u_email, choice)
-                st.session_state.permissions_map[u_email] = choice
-                st.rerun()
+    with c4:
+    # Check if user is superadmin (implement is_superadmin(u_email) as needed)
+        if is_superadmin(u_email):  # Returns True if superadmin role
+         
+         
+           
+          choice = st.radio(
+            "Permission",
+            ["YES", "NO"],
+            index=0,
+            key=f"radio_{u_email}",
+            label_visibility="collapsed",
+            horizontal=True
+        )
+        else:
+             
+         radio_idx = 0 if current_status == "YES" else 1
+         choice = st.radio(
+            "Permission",
+            ["YES", "NO"],
+            index=radio_idx,
+            key=f"radio_{u_email}",
+            label_visibility="collapsed",
+            horizontal=True
+        )
+             
+        
+        if choice != current_status:
+            update_db_permission(u_email, choice)
+            st.session_state.permissions_map[u_email] = choice
+            st.rerun()
 
         # ONE-CLICK DELETE (NEW)
         with c5:

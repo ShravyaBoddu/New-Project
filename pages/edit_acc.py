@@ -37,7 +37,7 @@ if "target_file" not in st.session_state or "target_user" not in st.session_stat
 target_file = st.session_state["target_file"]
 target_user = st.session_state["target_user"]
 
-st.title(f"✏️ Editing: {target_file}")
+st.title(f"Editing: {target_file}")
 st.caption(f"Uploaded by: {target_user}")
 
 # --- 3. Fetch data ---

@@ -91,12 +91,10 @@ else:
             # --- Edit Button Logic ---
             with c4:
                 if st.button("Edit", key=f"edit_{idx}"):
-                    if current_status == "YES":
-                        st.session_state["target_file"] = target_file
-                        st.session_state["target_user"] = target_user
-                        st.switch_page("pages/file_edit.py")
-                    else:
-                        st.error(f"Access Denied (Status: {current_status})")
+                    st.session_state["target_file"] = target_file
+                    st.session_state["target_user"] = target_user
+                    st.switch_page("pages/file_edit.py")
+                
 
             # --- Delete Button Logic ---
             with c5:

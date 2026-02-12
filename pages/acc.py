@@ -100,12 +100,14 @@ else:
                 c4.button("🔒", key=f"edit_locked_{idx}", disabled=True)
 
             # DELETE LOGIC (using a Popover for safe confirmation)
-            with c5:
-                if st.button("Delete", key=f"confirm_del_{idx}"):
+            if allowed_status == "YES":
+            
+                if c5.button("Delete", key=f"confirm_del_{idx}"):
 
                     
                         delete_file_record(current_user_email, fname)
                         st.success("Deleted")
                         st.rerun()
+                        
 
 st.divider()
