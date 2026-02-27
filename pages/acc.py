@@ -42,13 +42,34 @@ if 'user_email' not in st.session_state:
     st.stop()
 
 current_user_email = st.session_state['user_email']
+st.markdown("""
+<style>
+    /* Main Background */
+    [data-testid="stAppViewContainer"] { background-color: #f8f9fc; }
+/* Default Button Hover */
+div[data-testid=stButton] button:hover {
+    background-color: #B0C4DE  !important; /* Change hover color here */
+    border: 1px solid black !important;
+    color: black !important;
+}
 
+/* General Button Styles */
+div[data-testid=stButton] button {
+    # background-color: #B0C4DE !important; /* Light Blue */
+    border: 1px solid black !important; /* Black Border */
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: 500;
+    color: black !important;
+}
+</style>
+""", unsafe_allow_html=True)
 # --- Navigation ---
 col_head, col_back, col_logout = st.columns([5, 1, 1])
 with col_back:
     if st.button("⬅️ Back"): st.switch_page("pages/app.py")
 with col_logout:
-    if st.button("Logout"):
+    if st.button("Logout ⏻"):
         st.session_state.clear()
         st.switch_page("login.py")
 
@@ -111,3 +132,19 @@ else:
                         
 
 st.divider()
+
+
+
+
+
+st.markdown("---")
+st.markdown(
+    """
+    <div style='text-align: center; color: #6c757d; font-size: 14px; padding: 20px 0;'>
+        <p></p>
+        <p></p>
+        <p style='margin-top: 10px; font-size: 12px;'>© 2026 RIGHT SIDE BUSINESS SOLUTIONS PRIVATE LIMITED</p>
+    </div>
+    """, 
+    unsafe_allow_html=True
+)

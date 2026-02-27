@@ -38,11 +38,39 @@ with home_col:
     if st.button("⬅️ Back"):
         st.switch_page("pages/app.py")
 with logout_col:
-    if st.button("Logout"):
+    if st.button("Logout ⏻"):
         st.session_state.clear()
         st.switch_page("login.py")
 
 st.title("📁 File Upload History")
+st.markdown("""
+<style>
+    /* Main Background */
+    [data-testid="stAppViewContainer"] { background-color: #f8f9fc; }
+
+    
+    div[data-testid="stButton"] button {
+        # background-color: #6495ED !important; /* Light Blue */
+        border: 1px solid black !important;   /* Black Border */
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-weight: 500;
+        color: black !important;              /* Dark text for better contrast */
+    }
+    div[data-testid="stButton"] button:hover, 
+    div[data-testid="stDownloadButton"] button:hover {
+        border: 2px solid black !important;
+        background-color: #B0C4DE !important;
+    }
+
+
+    
+    
+    </style>
+""", unsafe_allow_html=True)
+
+
+
 
 # --- 4. Data Loading ---
 @st.cache_data(ttl=300)
@@ -112,3 +140,14 @@ else:
                         st.error(f"Delete failed: {e}")
 
     st.divider()
+st.markdown("---")
+st.markdown(
+    """
+    <div style='text-align: center; color: #6c757d; font-size: 14px; padding: 20px 0;'>
+        <p></p>
+        <p></p>
+        <p style='margin-top: 10px; font-size: 12px;'>© 2026 RIGHT SIDE BUSINESS SOLUTIONS PRIVATE LIMITED</p>
+    </div>
+    """, 
+    unsafe_allow_html=True
+)

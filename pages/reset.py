@@ -57,6 +57,20 @@ def reset_password(email, new_password):
 
 # --- PAGE CONFIG ---
 st.set_page_config(page_title="Reset Password", layout="centered")
+st.markdown("""
+<style>
+    /* Main Background */
+    [data-testid="stAppViewContainer"] { background-color: #f8f9fc; }
+div[data-testid="stButton"] button {
+        # background-color: #6495ED !important; /* Light Blue */
+        border: 1px solid black !important;   /* Black Border */
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-weight: 500;
+        color: black !important;              /* Dark text for better contrast */
+    }
+</style>
+""", unsafe_allow_html=True)
 
 # --- SESSION STATE ---
 if 'reset_success' not in st.session_state:
@@ -110,6 +124,17 @@ if reset_clicked:
 # --- CANCEL BUTTON LOGIC ---
 if back_clicked:
     st.switch_page("login.py")
+st.markdown("---")
+st.markdown(
+    """
+    <div style='text-align: center; color: #6c757d; font-size: 14px; padding: 20px 0;'>
+        <p></p>
+        <p></p>
+        <p style='margin-top: 10px; font-size: 12px;'>© 2026 RIGHT SIDE BUSINESS SOLUTIONS PRIVATE LIMITED</p>
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
 
 
 

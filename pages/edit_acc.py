@@ -15,6 +15,12 @@ def init_db():
 engine = init_db()
 
 st.set_page_config(page_title="Edit File Records", layout="wide")
+st.markdown("""
+<style>
+    /* Main Background */
+    [data-testid="stAppViewContainer"] { background-color: #f8f9fc; }
+</style>
+""", unsafe_allow_html=True)
 
 col1, col2, col3 = st.columns([5, 1, 1])
 
@@ -23,7 +29,7 @@ with col2:
         st.switch_page("pages/acc.py")
 
 with col3:
-    if st.button("Logout"):
+    if st.button("Logout ⏻"):
         st.session_state.clear()
         st.switch_page("login.py")
 
@@ -101,3 +107,14 @@ with col_save:
 
         except Exception as e:
             st.error(f"Error saving changes: {e}")
+st.markdown("---")
+st.markdown(
+    """
+    <div style='text-align: center; color: #6c757d; font-size: 14px; padding: 20px 0;'>
+        <p></p>
+        <p></p>
+        <p style='margin-top: 10px; font-size: 12px;'>© 2026 RIGHT SIDE BUSINESS SOLUTIONS PRIVATE LIMITED</p>
+    </div>
+    """, 
+    unsafe_allow_html=True
+)

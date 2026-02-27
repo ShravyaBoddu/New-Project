@@ -43,6 +43,79 @@ def get_all_permissions():
 
 if "permissions_map" not in st.session_state:
     st.session_state.permissions_map = get_all_permissions()
+import streamlit as st
+
+st.markdown("""
+<style>
+/* Main Background */
+[data-testid=stAppViewContainer] {
+    background-color: #f8f9fc;
+}
+
+/* Default Button Hover */
+div[data-testid=stButton] button:hover {
+    background-color: #B0C4DE  !important; /* Change hover color here */
+    border: 1px solid black !important;
+    color: black !important;
+}
+
+/* General Button Styles */
+div[data-testid=stButton] button {
+    # background-color: #B0C4DE !important; /* Light Blue */
+    border: 1px solid black !important; /* Black Border */
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: 500;
+    color: black !important;
+}
+
+
+
+/* Search Button (Primary Blue) */
+    .stFormSubmitButton > button {
+        background-color: #4169E1 !important;
+        color: white !important;
+        # border: 1px solid black!important;
+        height: 3em;
+        width: 100%;
+        border-radius: 8px;
+    }
+/* Search Button (Primary Blue) */
+    .stFormSubmitButton > button {
+        background-color: #4169E1 !important;
+        color: white !important;
+        # border: 1px solid black!important;
+        height: 3em;
+        width: 100%;
+        border-radius: 8px;
+    }
+div.add-user-container div[data-testid="stButton"] button {
+    background-color: #4169E1 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px;
+    transition: none !important; /* Disables smooth transitions */
+}
+
+/* Force NO hover effects */
+div.add-user-container div[data-testid="stButton"] button:hover, 
+div.add-user-container div[data-testid="stButton"] button:active,
+div.add-user-container div[data-testid="stButton"] button:focus {
+    background-color: #4169E1 !important; /* Keep same color */
+    color: white !important;
+    border: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+
+
+
+
+    
 
 # --- 2. Navigation Header ---
 col_nav, col_back, col_logout = st.columns([5, 1, 1])
@@ -50,7 +123,7 @@ with col_back:
     if st.button("⬅️ Back"):
         st.switch_page("pages/app.py")
 with col_logout:
-    if st.button("Logout"):
+    if st.button("Logout ⏻"):
         st.session_state.clear()
         st.switch_page("login.py")
 
@@ -168,3 +241,15 @@ for idx, row in display_df.iterrows():
                     
                 except Exception as e:
                     st.error(f"❌ Delete failed: {str(e)}")
+
+st.markdown("---")
+st.markdown(
+    """
+    <div style='text-align: center; color: #6c757d; font-size: 14px; padding: 20px 0;'>
+        <p></p>
+        <p></p>
+        <p style='margin-top: 10px; font-size: 12px;'>© 2026 RIGHT SIDE BUSINESS SOLUTIONS PRIVATE LIMITED</p>
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
