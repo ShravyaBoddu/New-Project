@@ -47,57 +47,52 @@ if st.session_state.get("admin_view") == "editor":
 # --- CSS STYLING ---
 st.markdown("""
 <style>
-    /* Main Background */
-    [data-testid="stAppViewContainer"] { background-color: #f8f9fc; }
-
-    /* Header Buttons: ALL Light Blue Background + Black Border */
-    div[data-testid="stButton"] button {
-        # background-color: #6495ED !important; /* Light Blue */
-        border: 1px solid black !important;   /* Black Border */
-        border-radius: 8px;
-        padding: 8px 16px;
-        font-weight: 500;
-        color: black !important;              /* Dark text for better contrast */
+    /* 1. Main Backgrounds */
+    [data-testid="stAppViewContainer"], [data-testid="stMainViewContainer"] { 
+        background-color: #F3F6FB; 
     }
+    [data-testid="stHeader"] { background-color: rgba(0,0,0,0); }
 
-    /* Save Changes Button: White Background + Black Border */
-    div[data-testid="stButton"] button:has(div p:contains("Save Changes to Database")) {
-        background-color: white !important;
-        border: 2px solid black !important;
-       
-        border-radius: 8px;
-    }
-
-    /* Download Excel Button: White Background + Black Border */
+    /* 2. Global Button Style (Removes Hover & Sets Color) */
+    div[data-testid="stButton"] button, 
     div[data-testid="stDownloadButton"] button {
-        background-color: white !important;
+        background-color: 	#4682B4!important;
+        color: white !important;
         border: 1px solid black !important;
         border-radius: 8px;
-        color: black !important;
+        transition: none !important; /* Removes the smooth fade effect */
     }
 
-    /* Search Button (Primary Blue) */
+    /* 3. Force color to STAY during Hover, Focus, and Click */
+    div[data-testid="stButton"] button:hover, 
+    div[data-testid="stButton"] button:active, 
+    div[data-testid="stButton"] button:focus,
+    div[data-testid="stDownloadButton"] button:hover,
+    div[data-testid="stDownloadButton"] button:active,
+    div[data-testid="stDownloadButton"] button:focus {
+        background-color: #4682B4 !important;
+        color: white !important;
+        border: 1px solid black !important;
+        box-shadow: none !important; /* Removes the Streamlit blue glow */
+        outline: none !important;
+    }
+
+    /* 4. Keep your specific "Search" button blue */
     .stFormSubmitButton > button {
         background-color: #4169E1 !important;
         color: white !important;
-        # border: 1px solid black!important;
-        height: 3em;
-        width: 100%;
         border-radius: 8px;
+        width: 100%;
+    }
+     div[data-testid="stButton"] button p:contains("Save Changes to Database"),
+    div[data-testid="stDownloadButton"] button {
+        background-color: white !important;
+        color: black !important;
     }
 
-    /* Keep Borders and Colors consistent on Hover */
-    div[data-testid="stButton"] button:hover, 
-    div[data-testid="stDownloadButton"] button:hover {
-        border: 2px solid black !important;
-        background-color: #B0C4DE !important;
-    }
-
-    /* Metrics & Inputs */
+    /* 5. Metrics & UI Cleanup */
     [data-testid="stMetricValue"] { color: #4169E1 !important; font-weight: 800; }
     div[data-baseweb="base-input"] { border: 1px solid #cbd5e1 !important; border-radius: 8px !important; }
-
-    /* Hide UI Elements */
     [data-testid="collapsedControl"] { display: none; }
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}

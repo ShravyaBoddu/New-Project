@@ -45,23 +45,28 @@ current_user_email = st.session_state['user_email']
 st.markdown("""
 <style>
     /* Main Background */
-    [data-testid="stAppViewContainer"] { background-color: #f8f9fc; }
-/* Default Button Hover */
-div[data-testid=stButton] button:hover {
-    background-color: #B0C4DE  !important; /* Change hover color here */
-    border: 1px solid black !important;
-    color: black !important;
-}
+    [data-testid="stAppViewContainer"] { background-color: #F3F6FB; }
+    [data-testid="stHeader"] { background-color: rgba(0,0,0,0); }
+
+
 
 /* General Button Styles */
 div[data-testid=stButton] button {
-    # background-color: #B0C4DE !important; /* Light Blue */
+    background-color: #4682B4 !important; 
     border: 1px solid black !important; /* Black Border */
     border-radius: 8px;
     padding: 8px 16px;
     font-weight: 500;
-    color: black !important;
+    color: white !important;
 }
+div[data-testid="stButton"] > button:hover,
+    div[data-testid="stButton"] > button:active {
+        background-color: #4682B4 !important;
+        color: white !important;
+        border: 1px solid black !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 # --- Navigation ---

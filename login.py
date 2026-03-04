@@ -44,11 +44,66 @@ if 'logged_in' not in st.session_state:
 # --- UI LOGIC ---
 if not st.session_state.logged_in:
     st.set_page_config(page_title="Login", page_icon="🔐", layout="centered")
+    st.markdown("""
+        <style>
+            [data-testid="stSidebar"] {
+                display: none;
+            }
+            [data-testid="stSidebarCollapsedControl"] {
+            display: none;
+        }
+            /* 2. Main Background */
+            [data-testid="stAppViewContainer"] {
+            background-color: #E6E6FA;
+            
+          }
+
+           /* Ensure the header also matches the color */
+            [data-testid="stHeader"] {
+             background-color: rgba(0,0,0,0);
+               }
+            /* 5. 'Log In' Button (Solid Teal) */
+            div.stButton > button:first-child:not([key="forgot btn"]) {
+            background-color: #004D4D !important;
+            color: white !important;
+            border-radius: 8px !important;
+            border: none !important;
+            height: 3em !important;
+            width: 100% !important;
+            font-weight: bold !important;
+        }
+
+        /* 6. 'Forgot Password' Button (Outline) */
+           div[data-testid="stButton"] button:has(div p:contains("Forgot Password")) {
+        background-color: white !important;
+        border: 1px solid black !important;
+       
+        border-radius: 8px;
+        color : #004D4D;
+    }
+    
+
+        div[data-baseweb="input"] {
+            border : 1px solid black;
+            border-radius: 10 px !important;
+                }
+        .stTextInput > label {
+            font-weight: bold !important;
+            font-size: 1.9em !important; /* Optional: makes it slightly larger */
+            color : black;
+            }
+
+                
+            
+                
+        </style>
+    """, unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1, 8, 1])
     
     with col2:
-        st.title("🔐 User Login")
+        
+        st.title("🔐 Log In")
         user_id = st.text_input("Email ", key="login_user")
         user_pass = st.text_input("Password", type="password", key="login_pass")
         

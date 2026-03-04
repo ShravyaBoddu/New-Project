@@ -62,13 +62,27 @@ st.markdown("""
     /* Main Background */
     [data-testid="stAppViewContainer"] { background-color: #f8f9fc; }
 div[data-testid="stButton"] button {
-        # background-color: #6495ED !important; /* Light Blue */
+        background-color: #A9A9A9 !important; /* Light Blue */
         border: 1px solid black !important;   /* Black Border */
         border-radius: 8px;
         padding: 8px 16px;
         font-weight: 500;
         color: black !important;              /* Dark text for better contrast */
     }
+    [data-testid="stHeader"] {
+             background-color: rgba(0,0,0,0);
+               }
+    div[data-baseweb="input"] {
+            border : 1px solid black;
+            border-radius: 10 px !important;
+                }
+        div.Button > button[key="back_clicked"] {
+             background-color: white !important;
+            #  border: 1px solid #04AA6D !important; 
+             color: #04AA6D !important;            /* Text Color */
+            border-radius: 8px !important;
+        
+             }
 </style>
 """, unsafe_allow_html=True)
 
@@ -77,7 +91,7 @@ if 'reset_success' not in st.session_state:
     st.session_state.reset_success = False
 
 # --- MAIN UI ---
-st.title("Reset Password")
+st.title("Reset Password🗘")
 st.markdown("---")
 
 # Email input

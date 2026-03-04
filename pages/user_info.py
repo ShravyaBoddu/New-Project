@@ -49,25 +49,27 @@ st.markdown("""
 <style>
 /* Main Background */
 [data-testid=stAppViewContainer] {
-    background-color: #f8f9fc;
+    background-color: #F3F6FB;
 }
+[data-testid="stHeader"] { 
+        background-color: rgba(0,0,0,0); 
+    }
 
-/* Default Button Hover */
-div[data-testid=stButton] button:hover {
-    background-color: #B0C4DE  !important; /* Change hover color here */
-    border: 1px solid black !important;
-    color: black !important;
-}
+
 
 /* General Button Styles */
 div[data-testid=stButton] button {
-    # background-color: #B0C4DE !important; /* Light Blue */
+    background-color: #4682B4!important; /* Light Blue */
     border: 1px solid black !important; /* Black Border */
     border-radius: 8px;
     padding: 8px 16px;
     font-weight: 500;
-    color: black !important;
+    color: white !important;
 }
+div[data-baseweb="input"] {
+            border : 1px solid black;
+            border-radius: 10 px !important;
+                }
 
 
 
@@ -101,12 +103,17 @@ div.add-user-container div[data-testid="stButton"] button {
 div.add-user-container div[data-testid="stButton"] button:hover, 
 div.add-user-container div[data-testid="stButton"] button:active,
 div.add-user-container div[data-testid="stButton"] button:focus {
-    background-color: #4169E1 !important; /* Keep same color */
+    background-color: #4682B4 !important; /* Keep same color */
     color: white !important;
     border: none !important;
     box-shadow: none !important;
     transform: none !important;
 }
+div[data-testid="stButton"] button p:contains("Add New User"),
+    {
+        background-color: white !important;
+        color: black !important;
+    }
 
 </style>
 """, unsafe_allow_html=True)

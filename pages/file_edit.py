@@ -18,7 +18,25 @@ st.set_page_config(page_title="Edit File Records", layout="wide")
 st.markdown("""
 <style>
     /* Main Background */
-    [data-testid="stAppViewContainer"] { background-color: #f8f9fc; }
+    [data-testid="stAppViewContainer"] { background-color:  #F3F6FB; }
+    [data-testid="stHeader"] { background-color: rgba(0,0,0,0); }
+    /* General Button Styles */
+div[data-testid=stButton] button {
+    background-color: #4682B4 !important; 
+    border: 1px solid black !important; /* Black Border */
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: 500;
+    color: white !important;
+}
+div[data-testid="stButton"] > button:hover,
+    div[data-testid="stButton"] > button:active {
+        background-color: #4682B4 !important;
+        color: white !important;
+        border: 1px solid black !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 

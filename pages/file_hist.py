@@ -46,29 +46,44 @@ st.title("📁 File Upload History")
 st.markdown("""
 <style>
     /* Main Background */
-    [data-testid="stAppViewContainer"] { background-color: #f8f9fc; }
+    [data-testid="stAppViewContainer"] { 
+        background-color: #F3F6FB; 
+    }
 
-    
-    div[data-testid="stButton"] button {
-        # background-color: #6495ED !important; /* Light Blue */
-        border: 1px solid black !important;   /* Black Border */
+    [data-testid="stHeader"] { 
+        background-color: rgba(0,0,0,0); 
+    }
+
+    /* Default Button Style (Blue) */
+    div[data-testid="stButton"] > button {
+        background-color: #4682B4 !important;
+        border: 1px solid black !important;
         border-radius: 8px;
         padding: 8px 16px;
         font-weight: 500;
-        color: black !important;              /* Dark text for better contrast */
-    }
-    div[data-testid="stButton"] button:hover, 
-    div[data-testid="stDownloadButton"] button:hover {
-        border: 2px solid black !important;
-        background-color: #B0C4DE !important;
+        color: white !important;
+        box-shadow: none !important;
+        outline: none !important;
     }
 
+    div[data-testid="stButton"] > button:hover,
+    div[data-testid="stButton"] > button:active {
+        background-color: #4682B4 !important;
+        color: white !important;
+        border: 1px solid black !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
 
-    
-    
-    </style>
+    button[data-testid="baseButton-secondary"] {
+    background-color: transparent !important;
+    color: inherit !important;
+    border: none !important;
+}
+
+
+</style>
 """, unsafe_allow_html=True)
-
 
 
 
@@ -118,7 +133,7 @@ else:
 
             # --- Edit Button Logic ---
             with c4:
-                if st.button("Edit", key=f"edit_{idx}"):
+                if st.button("✏️Edit", key=f"edit_{idx}",type="secondary"):
                     st.session_state["target_file"] = target_file
                     st.session_state["target_user"] = target_user
                     st.switch_page("pages/file_edit.py")
@@ -126,7 +141,7 @@ else:
 
             # --- Delete Button Logic ---
             with c5:
-                if st.button("Delete", key=f"del_{idx}"):
+                if st.button("Delete🗑️", key=f"del_{idx}",type="secondary"):
                     try:
                         with engine.begin() as conn:
                             # Delete records

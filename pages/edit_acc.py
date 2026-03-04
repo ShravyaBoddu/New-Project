@@ -18,7 +18,7 @@ st.set_page_config(page_title="Edit File Records", layout="wide")
 st.markdown("""
 <style>
     /* Main Background */
-    [data-testid="stAppViewContainer"] { background-color: #f8f9fc; }
+    [data-testid="stAppViewContainer"] { background-color: #F3F6FB; }
 </style>
 """, unsafe_allow_html=True)
 

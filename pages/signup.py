@@ -65,13 +65,20 @@ st.markdown("""
     [data-testid="stAppViewContainer"] { background-color: #f8f9fc; }
 
 div[data-testid="stButton"] button {
-        # background-color: #6495ED !important; /* Light Blue */
+        background-color: #A9A9A9 !important; 
         border: 1px solid black !important;   /* Black Border */
         border-radius: 8px;
         padding: 8px 16px;
         font-weight: 500;
         color: black !important;              /* Dark text for better contrast */
     }
+    [data-testid="stHeader"] {
+             background-color: rgba(0,0,0,0);
+               }
+    div[data-baseweb="input"] {
+            border : 1px solid black;
+            border-radius: 10 px !important;
+                }
 </style>
 """, unsafe_allow_html=True)
 
