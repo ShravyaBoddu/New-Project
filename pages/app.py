@@ -216,7 +216,7 @@ if st.session_state.get('filtered_df') is not None:
             buffer = io.BytesIO()
             with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
                 df_res.to_excel(writer, index=False)
-            st.download_button("📥 Download Excel", data=buffer.getvalue(), file_name="results.xlsx")
+            st.download_button("📥 Download Result", data=buffer.getvalue(), file_name="results.xlsx")
 
     with act2:
         st.metric("Total Records", len(df_res))
