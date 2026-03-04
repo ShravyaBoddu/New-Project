@@ -19,6 +19,24 @@ st.markdown("""
 <style>
     /* Main Background */
     [data-testid="stAppViewContainer"] { background-color: #F3F6FB; }
+    [data-testid="stHeader"] { background-color: rgba(0,0,0,0); }
+    /* General Button Styles */
+div[data-testid=stButton] button {
+    background-color: #4682B4 !important; 
+    border: 1px solid black !important; /* Black Border */
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: 500;
+    color: white !important;
+}
+div[data-testid="stButton"] > button:hover,
+    div[data-testid="stButton"] > button:active {
+        background-color: #4682B4 !important;
+        color: white !important;
+        border: 1px solid black !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -43,7 +61,7 @@ if "target_file" not in st.session_state or "target_user" not in st.session_stat
 target_file = st.session_state["target_file"]
 target_user = st.session_state["target_user"]
 
-st.title(f"Editing: {target_file}")
+st.title(f"✏️Editing: {target_file}")
 st.caption(f"Uploaded by: {target_user}")
 
 # --- 3. Fetch data ---

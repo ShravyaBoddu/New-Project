@@ -141,7 +141,7 @@ else:
 
             # --- Delete Button Logic ---
             with c5:
-                if st.button("Delete🗑️", key=f"del_{idx}",type="secondary"):
+                if st.button("Delete", key=f"del_{idx}",type="secondary"):
                     try:
                         with engine.begin() as conn:
                             # Delete records
